@@ -1,13 +1,12 @@
-from src.infra.database import Database
+from src.infra.database import AdminsDB
 
-
-database = Database()
-database.InsertStatement({
+database = AdminsDB()
+database.insert({
     "first_name": "yehia",
     "last_name": "mohamed",
-    "password": 1234,
-    "credit_hours": 18
+    "user_name": "yehia123",
+    "password": 1234
 })
-
-x = database.SelectById(1)
-print(type(x))
+database.delete_by_id(2)
+x = database.select_by_username("yehia123")
+print(x)
