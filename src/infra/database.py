@@ -11,7 +11,7 @@ class Database(ABC):
         self.engine = engine
         self.metadata = metaData
         self.table = self._create_table() 
-        self.metadata.create_all(self.engine)
+        self.metadata.create_all(self.engine)   
 
     @abstractmethod
     def _create_table(self):
@@ -35,6 +35,13 @@ class Database(ABC):
 
             return dict(result._mapping)
 
+    def select_all(self) -> list[dict]: 
+        """select all Item records"""
+        with self.engine.connect() as conn:
+            result = conn.execute(self.table.select()).fetchall()
+            return [dict(row._mapping) for row in result]
+        
+        
     def update_by_id(self, id: int, values: dict) -> None:
         """update an Item record by its ID"""
         with self.engine.begin() as conn:
@@ -103,3 +110,15 @@ class AdminsDB(Database):
 
             return dict(result._mapping)
     
+class CoursesDB(Database):
+
+    def _create_table(self):
+        return Table(
+            "courses",
+            self.metadata,
+            Column("id", Integer, primary_key=True, autoincrement=True),
+            Column("name", String, nullable=False),
+            Column("code", String, nullable=False),
+            Column("credit_hours", Integer, nullable=False)
+        )
+
