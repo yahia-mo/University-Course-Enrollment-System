@@ -121,4 +121,17 @@ class CoursesDB(Database):
             Column("code", String, nullable=False),
             Column("credit_hours", Integer, nullable=False)
         )
+    
+    def select_by_code(self, code: str) -> dict | None:
+        """select a Course record by its code"""
+        with self.engine.connect() as conn:
+            result = conn.execute(
+                self.table.select().where(self.table.c.code == code)
+            ).fetchone()
+
+            if result is None:
+                return None
+
+            return dict(result._mapping)
+        
 

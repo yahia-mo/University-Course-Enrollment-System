@@ -12,8 +12,8 @@ def setLastName(self, LastName) -> None:
     self._last_name = LastName
 
         
-def GetFirstName(self, FirstName) -> str:
+def GetFirstName(self) -> str:
     return self._first_name
 
-def GetLastName(self, LastName) -> str: 
+def GetLastName(self) -> str: 
     return self._last_name 
