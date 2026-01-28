@@ -81,20 +81,32 @@ class SubjectsDB(Database):
             Column("id", Integer, primary_key=True, autoincrement=True),
             Column("name", String, nullable=False),
 
-            Column(
-                "student_id", Integer, ForeignKey("students.id"), nullable=False)
+            Column("student_id", Integer, ForeignKey("students.id"), nullable=False),
+            Column("credit_hours", Integer, nullable=False)
         )
         
-    def select_by_student_id(self, student_id: int) -> list[dict]:
-        """select Subject records by student ID"""
+    def select_by_student_id(self, student_id: int) -> list[dict]:  
+        """select all Subject records for a given student ID"""
         with self.engine.connect() as conn:
             result = conn.execute(
                 self.table.select().where(self.table.c.student_id == student_id)
             ).fetchall()
-            if result is None:
-                return []   
-            return [dict(row._mapping) for row in result]
-    
+            return [dict(row._mapping) for row in result]   
+            
+        
+        
+    def getCreditHours_by_student_id(self, student_id: int) -> int:
+        """Get total credit hours for a given student ID"""
+        with self.engine.connect() as conn:
+            result = conn.execute(
+                self.table.select().where(self.table.c.student_id == student_id)
+            ).fetchall()
+            
+            total_credit_hours = sum(row._mapping["credit_hours"] for row in result)
+            if total_credit_hours is None:
+                return 0
+
+            return total_credit_hours
 class AdminsDB(Database):
 
     def _create_table(self):

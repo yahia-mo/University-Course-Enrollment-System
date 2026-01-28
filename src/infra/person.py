@@ -17,3 +17,6 @@ class Person:
 
     def getLastName(self) -> str: 
         return self._last_name 
+    
+    def getFullName(self) -> str:
+        return self._full_name
