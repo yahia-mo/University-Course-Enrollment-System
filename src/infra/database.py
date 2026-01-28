@@ -11,7 +11,7 @@ class Database(ABC):
         self.engine = engine
         self.metadata = metaData
         self.table = self._create_table() 
-        self.metadata.create_all(self.engine)   
+
 
     @abstractmethod
     def _create_table(self):
@@ -85,6 +85,16 @@ class SubjectsDB(Database):
                 "student_id", Integer, ForeignKey("students.id"), nullable=False)
         )
         
+    def select_by_student_id(self, student_id: int) -> list[dict]:
+        """select Subject records by student ID"""
+        with self.engine.connect() as conn:
+            result = conn.execute(
+                self.table.select().where(self.table.c.student_id == student_id)
+            ).fetchall()
+            if result is None:
+                return []   
+            return [dict(row._mapping) for row in result]
+    
 class AdminsDB(Database):
 
     def _create_table(self):

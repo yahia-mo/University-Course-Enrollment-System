@@ -24,6 +24,7 @@ class Admin(Person):
 
 # todo:(abdo) add function that add new student and return student object
 
+    
 #todo:(abdo) add function that add new admin and return admin object
 
 #todo:(abdo) add function that take a student object and save it to database

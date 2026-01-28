@@ -5,15 +5,15 @@ class Person:
         self._last_name:str = last_name
         self._full_name:str = self._first_name + " " + self._last_name
         
-def setFirstName(self, FirstName) -> None:
-    self._first_name = FirstName
+    def setFirstName(self, FirstName) -> None:
+        self._first_name = FirstName
 
-def setLastName(self, LastName) -> None:
-    self._last_name = LastName
+    def setLastName(self, LastName) -> None:
+        self._last_name = LastName
 
-        
-def GetFirstName(self) -> str:
-    return self._first_name
+            
+    def getFirstName(self) -> str:
+        return self._first_name
 
-def GetLastName(self) -> str: 
-    return self._last_name 
+    def getLastName(self) -> str: 
+        return self._last_name 
