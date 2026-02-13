@@ -21,7 +21,6 @@ A CLI system to manage students, admins, courses, and subject enrollment in a un
 - SQLAlchemy
 - SQLite
 
-
 ---
 
 ## How to Run the Project
@@ -29,8 +28,8 @@ A CLI system to manage students, admins, courses, and subject enrollment in a un
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/yahia-mo/University-Course-Enrollment-System.git
+cd University-Course-Enrollment-System
 ```
 
 ### 2. Install The Requirments
