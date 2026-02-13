@@ -1,87 +1,69 @@
 from src.infra.person import Person
-from src.infra.database import SubjectsDB, CoursesDB
-
-
+from src.infra.database import StudentsDB, SubjectsDB, CoursesDB
 
 LIMITED_CREDIT_HOURS = 18
-class Student (Person):
-    def __init__(self, first_name:str, last_name:str, password:str, courses_db:CoursesDB, subject_db:SubjectsDB ):
+
+class Student(Person):
+    def __init__(self, id: int, first_name: str, last_name: str, password: str,
+                 courses_db: CoursesDB, subject_db: SubjectsDB, students_db: StudentsDB):
         super().__init__(first_name, last_name)
-        self._creditHours:int = 0
-        self._password: str= password
+        self._id = id
+        self._password = password
         self._courses_db = courses_db
         self._subject_db = subject_db
+        self._students_db = students_db
+        self._creditHours = subject_db.getCreditHours_by_student_id(self._id)
 
-    def setCreditHours(self, creditHours:int) -> None:
-        self._creditHours = creditHours
-    
-    def setPassword(self, password:str) -> None:
-        self._password = password
-        
+
     def getCreditHours(self) -> int:
         return self._creditHours
 
-    def getPassword(self) -> str:
-        return self._password
+    def getOwnedCoursesFromSubjects(self) -> list[dict]:
+        return self._subject_db.select_by_student_id(self._id)
 
-    def getOwnedCourses(self) -> list[dict]:
-        result = self._subject_db.select_by_student_id(self._id)
-        return result
-    
-    def addCourse(self, course_id: str) -> None:
-        Course = self._courses_db.get_course_by_code(course_id)
-        owned_courses = self.getOwnedCourses()
-        if Course is None:
+    def getOwnedCoursesFromCourses(self) -> list[dict]:
+        owned_subjects = self.getOwnedCoursesFromSubjects()
+        owned_names = {s["name"] for s in owned_subjects}
+        return [c for c in self._courses_db.select_all() if c["name"] in owned_names]
+
+    def getUnOwnedCourses(self) -> list[dict]:
+        owned_names = {c["name"] for c in self.getOwnedCoursesFromSubjects()}
+        return [c for c in self._courses_db.select_all() if c["name"] not in owned_names]
+
+    def addCourse(self, course_code: str):
+        course = self._courses_db.select_by_code(course_code)
+        if not course:
             print("Course not found")
             return
-        elif Course["credit_hours"] + self._creditHours > LIMITED_CREDIT_HOURS:
-            print("Credit hours exceed the limit")
+        if course["credit_hours"] + self._creditHours > LIMITED_CREDIT_HOURS:
+            print("Credit hours exceed limit")
             return
-        else:
-            for owned_course in owned_courses:
-                if owned_course["course_id"] == Course["id"]:
-                    print("Course already owned")
-                    return
-        
-        subject_data = {
-            "name": Course["name"],
-            "course_id": course_id,
-            "student_id": self._id
-        }
-        self._subject_db.insert(subject_data)
-        self._creditHours += Course["credit_hours"]
+        owned_names = {c["name"] for c in self.getOwnedCoursesFromSubjects()}
+        if course["name"] in owned_names:
+            print("Course already owned")
+            return
+        self._subject_db.insert({
+            "name": course["name"],
+            "student_id": self._id,
+            "credit_hours": course["credit_hours"]
+        })
+        self._creditHours += course["credit_hours"]
+        self._students_db.update_by_id(self._id, {"credit_hours": self._creditHours})
         print("Course added successfully")
-        
-        
-    def printOwnedCourses(self) -> None:
-        owned_courses = self.getOwnedCourses()
-        if not owned_courses:
-            print("No courses owned")
+
+    def deleteCourse(self, course_code: str):
+        course_name = None
+        course = self._courses_db.select_by_code(course_code)
+        if course:
+            course_name = course["name"]
+        if not course_name:
+            print("Course not found")
             return
-        print("Owned Courses:")
-        for course in owned_courses:
-            course_info = self._courses_db.get_course_by_code(course["course_id"])
-            if course_info:
-                print(f"- {course_info['name']} (Code: {course_info['code']}, Credit Hours: {course_info['credit_hours']})")
-                
-    def deleteCourse(self, course_id: str) -> None:
-        owned_courses = self.getOwnedCourses()
-        for owned_course in owned_courses:
-            if owned_course["course_id"] == course_id:
-                self._subject_db.delete_by_id(owned_course["id"])
-                course_info = self._courses_db.get_course_by_code(course_id)
-                if course_info:
-                    self._creditHours -= course_info["credit_hours"]
+        for c in self.getOwnedCoursesFromSubjects():
+            if c["name"] == course_name:
+                self._subject_db.delete_by_id(c["id"])
+                self._creditHours -= c["credit_hours"]
+                self._students_db.update_by_id(self._id, {"credit_hours": self._creditHours})
                 print("Course deleted successfully")
                 return
-        print("Course not found in owned courses")
-            
-        
-            
-        
-        
-    
-    
-        
-        
-    
+        print("Course not owned")

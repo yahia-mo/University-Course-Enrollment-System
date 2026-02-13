@@ -1,36 +1,46 @@
-from person import Person
-from Validation import ReadString, ReadInt
-from student import Student
-from security import PasswordHasher
-from infra.database import AdminsDB, StudentsDB
+from src.infra.courses import Courses
+from src.infra.person import Person
+from src.infra.security import PasswordHasher
+from src.infra.database import AdminsDB, StudentsDB, CoursesDB
 
-class Admin(Person):
-    def __init__(self, first_name: str, last_name: str, user_name: str, password: str):
+class Admin(Person, Courses):
+    def __init__(self, id: int, first_name: str, last_name: str, user_name: str, password: str,
+                 courses_db: CoursesDB, students_db: StudentsDB, admins_db: AdminsDB):
         super().__init__(first_name, last_name)
-        self._user_name: str = user_name
-        self._password: str = PasswordHasher.hash_password(password)
-
-    def setUserName(self, user_name: str) -> None:
+        self._id = id
         self._user_name = user_name
-         
-    def setPassword(self, password: str) -> None:
-        self._password = password
-        
+        self._password = password  # already hashed
+        self._courses_db = courses_db
+        self._students_db = students_db
+        self._admins_db = admins_db
+
+    def getId(self) -> int:
+        return self._id
+
     def getUserName(self) -> str:
         return self._user_name
 
     def verify_password(self, password: str) -> bool:
-        return PasswordHasher.verify(password, self._password_hash)
+        return PasswordHasher.verify(password, self._password)
 
-# todo:(abdo) add function that add new student and return student object
+    # Student management
+    def add_new_student(self, student: dict):
+        self._students_db.insert(student)
 
-    
-#todo:(abdo) add function that add new admin and return admin object
 
-#todo:(abdo) add function that take a student object and save it to database
+    def delete_student_by_id(self, student_id: int):
+        self._students_db.delete_by_id(student_id)
 
-#todo:(abdo) add function that take an admin object and save it to database
+    def view_all_students(self) -> list[dict]:
+        return self._students_db.select_all()
 
-#todo:(abdo) add function that view all admins return list of admins dict.
+    # Admin management
+    def add_new_admin(self, admin: dict):
+        self._admins_db.insert(admin)
+        
 
-# todo:(abdo) add function that view all students return list of students dict.
+    def delete_admin_by_id(self, admin_id: int):
+        self._admins_db.delete_by_id(admin_id)
+
+    def view_all_admins(self) -> list[dict]:
+        return self._admins_db.select_all()
