@@ -26,3 +26,7 @@ sqlite.db
 # ======================
 *.log
 
+university.db
+*.sqlite
+*.db
+

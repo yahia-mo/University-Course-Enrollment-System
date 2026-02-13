@@ -8,5 +8,5 @@ class PasswordHasher:
         return hashed.decode()
 
     @staticmethod
-    def verify(password: str, hashed: str) -> bool:
-        return bcrypt.checkpw(password.encode(), hashed.encode())
+    def verify_password(password: str, hashed_password: str) -> bool:
+        return bcrypt.checkpw(password.encode(), hashed_password.encode())
