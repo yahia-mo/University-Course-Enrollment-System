@@ -44,6 +44,5 @@ pip install -r requirements.txt
 - The app is Ready to use and Add your own Data .
 - In First Use you must use the Defult Admin Account .
 - **userName :** `admin@example.com`
-  
-
-
+- **Password :** `admin123`
+- After Login you can Add New Admins and Students and Courses and Enroll Students in Courses and many more features you can Explore it by yourself , then Delete the Defult Admin Account for Security .

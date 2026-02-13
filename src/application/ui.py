@@ -17,7 +17,7 @@ metaData.create_all(engine)
 admins_db.ensure_default_admin()  # Ensure the default admin exists in the database
 
 def CLS() -> None:
-    print("\n" * 40)
+    print("\n" * 50)
     
 def anyKeyToContinue()-> None:
     input("Press any key to continue...")
@@ -165,7 +165,7 @@ class MainScreen:
     @staticmethod
     def _goBackToTheAdminScreen(admin: Admin) -> None:
         """Go back to the admin screen"""
-        welcome_message = f"Welcome {admin.getUserName()}!\n"
+        welcome_message = f"Welcome {admin.getFullName()}!\n"
         print(welcome_message)
         MainScreen._showAdminChoices(admin)
     
