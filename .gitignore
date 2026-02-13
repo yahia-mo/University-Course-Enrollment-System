@@ -29,4 +29,5 @@ sqlite.db
 university.db
 *.sqlite
 *.db
+README.pdf
 
