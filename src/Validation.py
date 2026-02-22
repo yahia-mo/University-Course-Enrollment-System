@@ -1,8 +1,10 @@
-def ReadString(message: str) -> str:
+def ReadString(message: str, impty_message: str) -> str:
     """Reads a string input containing only letters."""
-    x = input(message)
-    while not x.isalpha():
-        x = input("Please enter a valid string (letters only): ")
+    x = input(message).strip()
+    while x == "" :
+        print(impty_message)
+        x = input(message).strip()
+        
     return x
 
 

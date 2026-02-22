@@ -44,3 +44,7 @@ class Admin(Person, Courses):
 
     def view_all_admins(self) -> list[dict]:
         return self._admins_db.select_all()
+    
+    def if_user_name_in_database(self, userName :str) -> bool:
+        result = self._admins_db.select_by_user_name(userName)
+        return result is not None

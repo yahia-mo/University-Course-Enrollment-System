@@ -1,4 +1,4 @@
-from src.Validation import ReadIntInRange, ReadInt
+from src.Validation import ReadIntInRange, ReadInt, ReadString
 from src.infra.database import AdminsDB, CoursesDB, StudentsDB, metaData, engine, SubjectsDB
 from src.infra.student import Student
 from src.infra.admin import Admin
@@ -83,13 +83,13 @@ class MainScreen:
             MainScreen._ShowStudentDetails(student)
         elif selection == 2:
             MainScreen._printUnownedCourses(student)
-            course_code = input("Enter the course code to add: ")
+            course_code = ReadString("Enter the course code to add: ", "Course code cannot be empty!")
             student.addCourse(course_code)
             anyKeyToContinue()
             MainScreen._ShowStudentDetails(student)
         elif selection == 3:
             MainScreen._printOwnedCourses(student)
-            course_code = input("Enter the course code to delete: ")
+            course_code = ReadString("Enter the course code to delete: ", "Course code cannot be empty!")
             student.deleteCourse(course_code)
             anyKeyToContinue()
             MainScreen._ShowStudentDetails(student)
@@ -177,6 +177,7 @@ class MainScreen:
         print("-" * 50)
         for student in students:
             print(f"{str(student['id']).ljust(5)} {student['first_name'].ljust(15)} {student['last_name'].ljust(15)} {str(student['credit_hours']).ljust(15)}")
+    
     @staticmethod        
     def _print_all_admins(admin: Admin) -> None:
         """Print a list of admins in a formatted table."""
@@ -199,22 +200,35 @@ class MainScreen:
     @staticmethod
     def _addNewAdmin(admin: Admin) -> None:
         """Add a new admin to the system."""
+        first_name = ReadString("Enter first name: ", "First name cannot be empty!").title()
+        last_name = ReadString("Enter last name: ", "Last name cannot be empty!").title()
+        user_name = ReadString("Enter username: ", "Username cannot be empty!")
+        password = ReadString("Enter password: ", "Password cannot be empty!")
+        
         new_admin = {
-            "first_name": input("Enter first name: "),
-            "last_name": input("Enter last name: "),
-            "user_name": input("Enter username: "),
-            "password": PasswordHasher.hash_password(input("Enter password: ")),
+            "first_name": first_name,
+            "last_name": last_name,
+            "user_name": user_name,
+            "password": PasswordHasher.hash_password(password),
         }
+        if new_admin["user_name"] == admin.getUserName() or admin.if_user_name_in_database(new_admin["user_name"]):
+            print("Username already exists !")
+            return
         admin.add_new_admin(new_admin)
         print("Admin added successfully!")
 
     @staticmethod
     def _addNewStudent(admin: Admin) -> None:
         """Add a new student to the system."""
+        first_name = ReadString("Enter first name: ", "First name cannot be empty!").title()
+        last_name = ReadString("Enter last name: ", "Last name cannot be empty!").title()
+        password = ReadString("Enter password: ", "Password cannot be empty!")
+
+        
         new_student = {
-            "first_name": input("Enter first name: "),
-            "last_name": input("Enter last name: "),
-            "password": PasswordHasher.hash_password(input("Enter password: ")),
+            "first_name": first_name,
+            "last_name": last_name,
+            "password": PasswordHasher.hash_password(password),
             "credit_hours": 0
         }
         admin.add_new_student(new_student)
@@ -242,17 +256,21 @@ class MainScreen:
             print("Cannot delete the last admin.")
             return
         admin_id = ReadInt("Enter the ID of the admin to delete: ")
-        admin.delete_admin_by_id(admin_id)
-        admin = admin._admins_db.select_by_id(admin_id)
-        if admin is not None:
+
+        admin1 = admin._admins_db.select_by_id(admin_id)
+        if admin1 is not None and admin1["id"] == admin.getId():
+            print("You cannot delete yourself!")
+            return
+        if admin1 is None:
             print("Admin not found!")
             return
+        admin.delete_admin_by_id(admin_id)
         print("Admin deleted successfully!")
     @staticmethod
     def _addNewCourse(admin: Admin) -> None:
         """Add a new course to the system."""
-        code = input("Enter course code: ")
-        name = input("Enter course name: ")
+        code = ReadString("Enter course code: ", "Course code cannot be empty!")
+        name = ReadString("Enter course name: ", "Course name cannot be empty!").title()
         credit_hours = ReadInt("Enter credit hours: ")
         course = admin.get_course_by_code(code)
         if course:
@@ -275,7 +293,7 @@ class MainScreen:
     def _deleteCourse(admin: Admin) -> None:
         """Delete a course from the system."""
         MainScreen._print_all_courses(admin)
-        course_code = input("Enter the course code to delete: ")
+        course_code = ReadString("Enter the course code to delete: ", "Course code cannot be empty!")
         course = admin.get_course_by_code(course_code)
         if not course:
             print("Course not found!")

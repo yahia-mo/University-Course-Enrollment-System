@@ -25,14 +25,31 @@ A CLI system to manage students, admins, courses, and subject enrollment in a un
 
 ## How to Run the Project
 
-### 1. Clone the repository
+### 1. Set up a virtual environment (optional but recommended)
+
+#### On Unix or MacOS
+
+```bash
+python -m venv venv
+source venv/bin/activate  
+```
+
+#### On Windows
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+### 2. Clone the repository
 
 ```bash
 git clone https://github.com/yahia-mo/University-Course-Enrollment-System.git
+
 cd University-Course-Enrollment-System
 ```
 
-### 2. Install The Requirments
+### 3. Install The Requirments
 
 ```bash
 pip install -r requirements.txt 

@@ -1,0 +1,6 @@
+bcrypt==5.0.0
+greenlet==3.3.0
+pep8==1.7.1
+ruff==0.14.13
+SQLAlchemy==2.0.45
+typing_extensions==4.15.0
